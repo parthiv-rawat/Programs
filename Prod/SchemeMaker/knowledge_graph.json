@@ -1,0 +1,90 @@
+{
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Education"
+    },
+    {
+      "id": "n2",
+      "label": "School"
+    },
+    {
+      "id": "n3",
+      "label": "University"
+    },
+    {
+      "id": "n4",
+      "label": "Subjects"
+    },
+    {
+      "id": "n5",
+      "label": "Mathematics"
+    },
+    {
+      "id": "n6",
+      "label": "Science"
+    },
+    {
+      "id": "n7",
+      "label": "Arts"
+    },
+    {
+      "id": "n8",
+      "label": "Teachers"
+    },
+    {
+      "id": "n9",
+      "label": "Students"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "n1",
+      "target": "n2",
+      "label": "in_a"
+    },
+    {
+      "id": "e2",
+      "source": "n1",
+      "target": "n3",
+      "label": "in_a"
+    },
+    {
+      "id": "e3",
+      "source": "n2",
+      "target": "n4",
+      "label": "has"
+    },
+    {
+      "id": "e4",
+      "source": "n4",
+      "target": "n5",
+      "label": "includes"
+    },
+    {
+      "id": "e5",
+      "source": "n4",
+      "target": "n6",
+      "label": "includes"
+    },
+    {
+      "id": "e6",
+      "source": "n4",
+      "target": "n7",
+      "label": "includes"
+    },
+    {
+      "id": "e7",
+      "source": "n2",
+      "target": "n8",
+      "label": "has"
+    },
+    {
+      "id": "e8",
+      "source": "n2",
+      "target": "n9",
+      "label": "has"
+    }
+  ]
+}
