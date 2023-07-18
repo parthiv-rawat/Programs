@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verifiable Credential Generator for University</title>
+</head>
+<body>
+    <h1>Verifiable Credential Generator</h1>
+    <form action="/generate1" method="post" name="university">
+        <label for="issuer">Issuer Name:</label>
+        <input type="text" id="issuer" name="issuer" required><br>
+
+        <label for="type">Institution Type:</label>
+        <input type="type" id="type" name="type" required><br>
+
+        <label for="program">Program:</label>
+        <input type="text" id="program" name="program" required><br>
+
+        <label for="department">Department:</label>
+        <input type="text" id="department" name="department" required><br>
+
+        <label for="graduation">Graduation Year:</label>
+        <input type="text" id="graduation" name="graduation" required><br>
+
+        <label for="DID">DID:</label>
+        <input type="text" id="DID" name="DID" required><br>
+
+        <input type="submit" value="Generate">
+    </form>
+</body>
+</html>

@@ -1,0 +1,328 @@
+package main
+
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"log"
+	"math/rand"
+	"os"
+	"time"
+
+	"github.com/golang-jwt/jwt/v4"
+)
+
+type VerifiableCredential interface {
+	GetContext() []string
+	GetID() string
+	GetType() []string
+	GetIssuer() string
+	GetIssuanceDate() string
+	GetCredentialSubject() interface{}
+}
+
+type CredentialTemplate struct {
+	UniversityDegreeTemplate *UniversityDegreeTemplate `json:"universityDegreeTemplate,omitempty"`
+	SchoolDiplomaTemplate    *SchoolDiplomaTemplate    `json:"schoolDiplomaTemplate,omitempty"`
+	AdmissionTemplate        *AdmissionTemplate        `json:"admissionTemplate,omitempty"`
+}
+
+type BaseCredential struct {
+	Context           []string              `json:"@context"`
+	ID                string                `json:"id"`
+	Type              []string              `json:"type"`
+	Issuer            string                `json:"issuer"`
+	IssuanceDate      string                `json:"issuanceDate"`
+	CredentialSubject map[string]interface{} `json:"credentialSubject"`
+	CredentialStatus  struct {
+		ID   string `json:"id"`
+		Type string `json:"type"`
+	} `json:"credentialStatus"`
+}
+
+type UniversityDegreeCredential struct {
+	BaseCredential
+}
+
+type SchoolDiplomaCredential struct {
+	BaseCredential
+}
+
+type AdmissionCredential struct {
+	BaseCredential
+}
+
+type Config struct {
+	PrivateKey string `json:"PrivateKey"`
+	Port       string `json:"Port"`
+}
+
+type CredentialGenerationRequest struct {
+	Issuer      string
+	Template    *CredentialTemplate
+	DID         string
+	GeneratedVC chan VerifiableCredential
+}
+
+const (
+	VerifiableCredentialType           = "VerifiableCredential"
+	UniversityDegreeCredentialType     = "UniversityDegreeCredential"
+	SchoolDiplomaCredentialType        = "SchoolDiplomaCredential"
+	AdmissionCredentialType            = "AdmissionCredential"
+	DefaultCredentialStatusList2023URL = "https://example.edu/status/"
+	DefaultIssuerCredentialURL         = "https://example.edu/credentials/"
+)
+
+const (
+	JWTExpirationTime = time.Hour * 1
+)
+
+func (c *BaseCredential) GetContext() []string {
+	return c.Context
+}
+
+func (c *BaseCredential) GetID() string {
+	return c.ID
+}
+
+func (c *BaseCredential) GetType() []string {
+	return c.Type
+}
+
+func (c *BaseCredential) GetIssuer() string {
+	return c.Issuer
+}
+
+func (c *BaseCredential) GetIssuanceDate() string {
+	return c.IssuanceDate
+}
+
+func (c *BaseCredential) GetCredentialSubject() interface{} {
+	return c.CredentialSubject
+}
+
+type UniversityDegreeTemplate struct {
+	DegreeType string `json:"degreeType"`
+	Program    string `json:"program"`
+	Department string `json:"department"`
+	Graduation int    `json:"graduation"`
+}
+
+type SchoolDiplomaTemplate struct {
+	Stream     string `json:"stream"`
+	Graduation int    `json:"graduation"`
+}
+
+type AdmissionTemplate struct {
+	AdmissionType string `json:"admissionType"`
+	SchoolName    string `json:"schoolName"`
+	Program       string `json:"program"`
+	AdmissionYear int    `json:"admissionYear"`
+}
+
+type UUIDGenerator func(string) string
+
+func generateCredential(request *CredentialGenerationRequest, credentialType string, generateUUID UUIDGenerator) VerifiableCredential {
+	credentialSubject := make(map[string]interface{})
+	credentialSubject["ID"] = request.DID
+	credentialSubject["Name"] = request.Issuer
+
+	switch credentialType {
+	case UniversityDegreeCredentialType:
+		template := request.Template.UniversityDegreeTemplate
+		credentialSubject["GraduationYear"] = template.Graduation
+		credentialSubject["Degree"] = map[string]string{
+			"Type":       template.DegreeType,
+			"Program":    template.Program,
+			"Department": template.Department,
+		}
+	case SchoolDiplomaCredentialType:
+		template := request.Template.SchoolDiplomaTemplate
+		credentialSubject["GraduationYear"] = template.Graduation
+		credentialSubject["Stream"] = template.Stream
+	case AdmissionCredentialType:
+		template := request.Template.AdmissionTemplate
+		credentialSubject["AdmissionType"] = template.AdmissionType
+		credentialSubject["SchoolName"] = template.SchoolName
+		credentialSubject["Program"] = template.Program
+		credentialSubject["AdmissionYear"] = template.AdmissionYear
+	default:
+		log.Fatalf("Unsupported credential type: %s", credentialType)
+		return nil
+	}
+
+	credentialID := generateUUID(request.DID)
+	credentialStatusID := fmt.Sprintf("%s%s", DefaultCredentialStatusList2023URL, credentialID)
+	credentialID = fmt.Sprintf("%s%s", DefaultIssuerCredentialURL, credentialID)
+
+	baseCredential := BaseCredential{
+		Context:      []string{"https://www.w3.org/2018/credentials/v1"},
+		ID:           credentialID,
+		Type:         []string{VerifiableCredentialType, credentialType},
+		Issuer:       request.Issuer,
+		IssuanceDate: time.Now().UTC().Format(time.RFC3339),
+		CredentialSubject: credentialSubject,
+		CredentialStatus: struct {
+			ID   string `json:"id"`
+			Type string `json:"type"`
+		}{
+			ID:   credentialStatusID,
+			Type: "CredentialStatusList2023",
+		},
+	}
+
+	switch credentialType {
+	case UniversityDegreeCredentialType:
+		return &UniversityDegreeCredential{BaseCredential: baseCredential}
+	case SchoolDiplomaCredentialType:
+		return &SchoolDiplomaCredential{BaseCredential: baseCredential}
+	case AdmissionCredentialType:
+		return &AdmissionCredential{BaseCredential: baseCredential}
+	default:
+		log.Fatalf("Unsupported credential type: %s", credentialType)
+		return nil
+	}
+}
+
+func generateUniversityCredential(request *CredentialGenerationRequest) VerifiableCredential {
+	return generateCredential(request, UniversityDegreeCredentialType, generateUUIDFromDID)
+}
+
+func generateSchoolCredential(request *CredentialGenerationRequest) VerifiableCredential {
+	return generateCredential(request, SchoolDiplomaCredentialType, generateUUIDFromDID)
+}
+
+func generateAdmissionCredential(request *CredentialGenerationRequest) VerifiableCredential {
+	return generateCredential(request, AdmissionCredentialType, generateUUIDFromDID)
+}
+
+func generateUUIDFromDID(did string) string {
+	hash := sha256.Sum256([]byte(did))
+	return fmt.Sprintf("%x", hash)
+}
+
+func generateJWT(vc VerifiableCredential, privateKey []byte) (string, error) {
+	vcBytes, err := json.Marshal(vc)
+	if err != nil {
+		return "", err
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"vc":  string(vcBytes),
+		"exp": time.Now().Add(JWTExpirationTime).Unix(),
+	})
+
+	signedToken, err := token.SignedString(privateKey)
+	if err != nil {
+		return "", err
+	}
+
+	return signedToken, nil
+}
+
+func loadConfig(filename string) (*Config, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	config := &Config{}
+	err = json.NewDecoder(file).Decode(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
+}
+
+func main() {
+	// Create a CredentialGenerationRequest for UniversityDegreeCredential
+	universityRequest := &CredentialGenerationRequest{
+		Issuer: "Example University",
+		Template: &CredentialTemplate{
+			UniversityDegreeTemplate: &UniversityDegreeTemplate{
+				DegreeType: "Bachelor's Degree",
+				Program:    "Computer Science",
+				Department: "Engineering",
+				Graduation: 2023,
+			},
+		},
+		DID: "did:example:12345",
+	}
+
+	// Generate UniversityDegreeCredential
+	universityCredential := generateUniversityCredential(universityRequest)
+	fmt.Println("University Degree Credential:")
+	fmt.Printf("%+v\n", universityCredential)
+
+	config, err := loadConfig("config.json")
+	if err != nil {
+		log.Fatal("Failed to load configuration:", err)
+	}
+
+	privateKey := []byte(config.PrivateKey)
+
+	jwtTokenUniversity, err := generateJWT(universityCredential, privateKey)
+	if err != nil {
+		log.Fatal("Failed to generate JWT token:", err)
+	}
+
+	fmt.Println("JWT Token:")
+	fmt.Println(jwtTokenUniversity)
+	fmt.Println()
+
+	// Create a CredentialGenerationRequest for SchoolDiplomaCredential
+	schoolRequest := &CredentialGenerationRequest{
+		Issuer: "Example School",
+		Template: &CredentialTemplate{
+			SchoolDiplomaTemplate: &SchoolDiplomaTemplate{
+				Stream:     "Science",
+				Graduation: 2023,
+			},
+		},
+		DID: "did:example:54321",
+	}
+
+	// Generate SchoolDiplomaCredential
+	schoolCredential := generateSchoolCredential(schoolRequest)
+	fmt.Println("School Diploma Credential:")
+	fmt.Printf("%+v\n", schoolCredential)
+
+	jwtTokenSchool, err := generateJWT(schoolCredential, privateKey)
+	if err != nil {
+		log.Fatal("Failed to generate JWT token:", err)
+	}
+
+	fmt.Println("JWT Token:")
+	fmt.Println(jwtTokenSchool)
+	fmt.Println()
+
+	// Create a CredentialGenerationRequest for AdmissionCredential
+	admissionRequest := &CredentialGenerationRequest{
+		Issuer: "Example University",
+		Template: &CredentialTemplate{
+			AdmissionTemplate: &AdmissionTemplate{
+				AdmissionType: "Undergraduate",
+				SchoolName:    "Example University",
+				Program:       "Computer Science",
+				AdmissionYear: 2023,
+			},
+		},
+		DID: "did:example:98765",
+	}
+
+	// Generate AdmissionCredential
+	admissionCredential := generateAdmissionCredential(admissionRequest)
+	fmt.Println("Admission Credential:")
+	fmt.Printf("%+v\n", admissionCredential)
+
+	jwtTokenAdmission, err := generateJWT(admissionCredential, privateKey)
+	if err != nil {
+		log.Fatal("Failed to generate JWT token:", err)
+	}
+
+	fmt.Println("JWT Token:")
+	fmt.Println(jwtTokenAdmission)
+}

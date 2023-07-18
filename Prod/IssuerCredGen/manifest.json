@@ -1,0 +1,16 @@
+{
+    "name": "Verifiable Credentials App",
+    "version": "1.0.0",
+    "entry_point": "main.go",
+    "dependencies": [
+      {
+        "name": "github.com/golang-jwt/jwt/v4",
+        "version": "v4.0.0"
+      },
+      {
+        "name": "github.com/golang/crypto",
+        "version": "latest"
+      }
+    ]
+  }
+  

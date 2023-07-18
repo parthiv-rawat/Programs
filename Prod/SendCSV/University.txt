@@ -1,0 +1,39 @@
+// Create relationship of university, course, school, student, teacher
+
+ CREATE (:University)-[:OFFERS]->(:Course)
+ CREATE (:University)<-[:IS_OFFERED_BY]-(:Course)
+
+ CREATE (:University)-[:ENROLLS]->(:Student)
+ CREATE (:University)<-[:BELONGS_TO]-(:Student)
+
+ CREATE (:University)-[:EMPLOYEES]->(:Teacher)
+ CREATE (:University)<-[:EMPLOYED_BY]-(:Teacher)
+
+ // ------------------------------------------------------
+
+ CREATE (:Course)-[:ENROLLED_BY]->(:Student)
+ CREATE (:Course)<-[:ENROLLS_IN]-(:Student)
+
+ CREATE (:Course)-[:TEACHES_BY]->(:Teacher)
+ CREATE (:Course)<-[:TEACHES]-(:Teacher)
+
+// -------------------------------------------------------
+
+CREATE (:Student)-[:IS_TAUGHT_BY]->(:Teacher)
+CREATE (:Student)<-[:TEACHES_TO]-(:Teacher)
+
+// -------------------------------------------------------
+
+CREATE (:School)-[:ENROLLS]->(:Student)
+CREATE (:School)<-[:LEARNS_IN]-(:Student)
+
+CREATE (:School)-[:EMPLOYEES]->(:Teacher)
+CREATE (:School)<-[:EMPLOYED_BY]-(:Teacher)
+
+CREATE (:School)-[:OFFERS]->(:Course)
+CREATE (:School)<-[:IS_OFFERED_BY]-(:Course)
+
+// -------------------------------------------------------
+
+CREATE (:University)-[:INCLUDE]->(:School)
+CREATE (:University)<-[:IS_PART_OF]-(:School)
