@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Gallery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="image-container">
+        <img src="images/image1.jpg" id="image" alt="Image 1">
+    </div>
+    <div>
+        <button onclick="previousImage()">Previous Image</button>
+        <button onclick="nextImage()">Next Image</button>
+    </div>
+
+    <script>
+        var currentImage = 1;
+        var totalImages = 5; // Change this to the total number of images in your gallery
+
+        function previousImage() {
+            if (currentImage > 1) {
+                currentImage--;
+            } else {
+                currentImage = totalImages;
+            }
+            updateImage();
+        }
+
+        function nextImage() {
+            if (currentImage < totalImages) {
+                currentImage++;
+            } else {
+                currentImage = 1;
+            }
+            updateImage();
+        }
+
+        function updateImage() {
+            var imageElement = document.getElementById('image');
+            imageElement.src = 'images/image' + currentImage + '.jpg'; // Replace 'image' with your actual image file names and extension
+            imageElement.alt = 'Image ' + currentImage;
+        }
+    </script>
+</body>
+</html>

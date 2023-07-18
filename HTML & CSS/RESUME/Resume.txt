@@ -1,0 +1,54 @@
+Parthiv Rawat
+123 Main Street | City, State, ZIP | (555) 123-4567 | parthiv.r@flyhigh.ai
+
+Objective:
+Highly skilled software engineer with a strong background in web development and a passion for creating innovative solutions. Seeking a challenging position to leverage my technical expertise and contribute to the success of a dynamic organization.
+
+Education:
+Bachelor of Science in Computer Science
+XYZ University, City, State
+Graduated: May 20XX
+
+Skills:
+Programming Languages: Java, C++, Python, JavaScript
+Web Development: HTML, CSS, JavaScript, jQuery, React
+Database Technologies: MySQL, MongoDB
+Version Control: Git, SVN
+Software Development Lifecycle (SDLC)
+Agile/Scrum methodologies
+Problem-solving and analytical thinking
+Excellent communication and collaboration skills
+
+Experience:
+Software Engineer
+ABC Company, City, State
+July 20XX - Present
+
+Develop and maintain web applications using Java, Spring, and JavaScript frameworks.
+Collaborate with cross-functional teams to design and implement software solutions.
+Participate in code reviews and provide constructive feedback to ensure code quality.
+Perform unit testing and debugging to identify and fix software defects.
+Assist in the deployment and release of software applications.
+
+
+Software Development Intern
+XYZ Corporation, City, State
+May 20XX - August 20XX
+
+Assisted in the development of a web-based inventory management system using Python and Django.
+Conducted software testing and identified and resolved bugs and issues.
+Collaborated with team members to enhance the user interface and improve system performance.
+Participated in meetings and provided input on project requirements and design decisions.
+
+Projects:
+Developed a responsive e-commerce website using React, Redux, and Node.js.
+Created a chatbot using natural language processing techniques in Python.
+Built a RESTful API for a mobile application using Java and Spring Boot.
+
+Certifications:
+Certified Scrum Master (CSM)
+Oracle Certified Java Programmer (OCP)
+
+References:
+Available upon request
+

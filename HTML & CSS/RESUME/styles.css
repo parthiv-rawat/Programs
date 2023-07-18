@@ -1,0 +1,118 @@
+/* [class~='resume-list'] {
+    font-style: italic;
+} */
+
+/* #aboutskill {
+    font-weight: bold;
+} */
+
+/* form > p {
+    font-weight: bold;
+} */
+
+/* #aboutme > p:nth-of-type(odd) {
+    font-weight: bold;
+} */
+
+/* a:visited{
+    color: red;
+} */
+
+/* a:focus, a:hover {
+    color: green;
+}
+
+input:focus, input:hover {
+    outline: 2px solid black;
+} */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+h1, h2 {
+    font-family: 'Dosis', sans-serif;
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+input, select, textarea {
+    font-family: 'Montserrat', sans-serif;
+}
+nav {
+    position: sticky;
+    /* inset-inline-start: 0; */
+    top: 0;
+    background-color: white;
+}
+
+nav ul {
+    display: flex;
+}
+
+nav ul li {
+    margin-inline: 0.25rem;
+    margin-block: 0;
+    line-height: 1.25rem;
+    list-style: none;
+}
+
+main {
+    max-inline-size: clamp(700px, 50%, 900px);
+    padding-inline: 2rem;
+    padding-block: 0;
+    border-inline-start: 2px solid black;
+    border-inline-end: 2px solid black;
+    margin-inline: auto;
+    margin-block: 0;
+}
+
+#aboutme {
+    /* background-color: black; */
+    /* color: white; */
+    display: flex;
+
+}
+
+#skills blockquote {
+    border: 1px solid black;
+    padding: 0 0.5rem;
+    padding-inline: 0;
+    padding-block: 0.5rem;
+    margin-inline: 0;
+    margin-block: 0.5rem;
+}
+
+.resume-fieldset {
+    border: none;
+    margin: 0;
+    padding-inline: 0;
+    padding-block: 0;
+}
+
+.resume-fieldset legend {
+    padding-inline: 0;
+    padding-block: 0;
+}
+
+.label-standard {
+    display: block;
+    margin-inline: 0.125rem;
+    margin-block: 0.125rem;
+}
+
+.field {
+    margin-block-end: 1.25rem;
+}
+
+.my-picture {
+    /* float: inline-start; */
+    
+    max-inline-size: 75px;
+    margin-inline-end: 1rem;
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Gallery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 1000px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            opacity: 1;
+            transition: opacity 0.1s ease-in-out; /* Add transition for smoother fade-in effect */
+        }
+
+        .fade-in {
+            animation: fade-in 0.1s ease-in-out; /* Add fade-in animation */
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0.2;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Gallery</h1>
+    <div class="image-container" onclick="nextImage()">
+        <img src="images/image1.jpg" id="image" alt="Image 1">
+    </div>
+
+    <script>
+        var currentImage = 1;
+        var totalImages = 5; // Change this to the total number of images in your gallery
+
+        function nextImage() {
+            if (currentImage < totalImages) {
+                currentImage++;
+            } else {
+                currentImage = 1;
+            }
+            updateImage();
+        }
+
+        function updateImage() {
+            var imageElement = document.getElementById('image');
+            imageElement.classList.add('fade-in'); // Add fade-in class
+            imageElement.addEventListener('animationend', removeFadeClass); // Remove fade-in class after animation ends
+
+            setTimeout(function() {
+                imageElement.src = 'images/image' + currentImage + '.jpg'; // Replace 'image' with your actual image file names and extension
+                imageElement.alt = 'Image ' + currentImage;
+            }, 100); // Adjust the delay (in milliseconds) to match the duration of the fade-in animation
+        }
+
+        function removeFadeClass() {
+            var imageElement = document.getElementById('image');
+            imageElement.classList.remove('fade-in'); // Remove fade-in class
+            imageElement.removeEventListener('animationend', removeFadeClass);
+        }
+    </script>
+</body>
+</html>
